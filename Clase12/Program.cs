@@ -16,7 +16,8 @@ namespace Clase12
 
             TraerUsuario("eperez",connectionString);
             TraerProductosPorUsuario(1,connectionString);
-           
+            TraerProductosVendidosPorUsuario(1,connectionString);
+
         }
         
         public static List<Producto> ListarProductos(string connectionString)
@@ -171,17 +172,50 @@ namespace Clase12
                     }
                 }
             }
-            Console.WriteLine(usuario);
+            //Console.WriteLine(usuario);
             return usuario;
         }
 
-        public static List<Producto> TraerProductosPorUsuario(int idUsuario, string connectionString)
+        public static List<Producto> TraerProductosPorUsuario(long idUsuario, string connectionString)
         {
             List<Producto> productos = new List<Producto>();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 // Select para traer todos los productos
                 SqlCommand comandoProducto = new SqlCommand($"SELECT * FROM Producto WHERE IdUsuario = {idUsuario}", connection);
+                connection.Open();
+                using (SqlDataReader reader = comandoProducto.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            productos.Add(new Producto(
+                                Convert.ToInt64(reader["Id"]),
+                                Convert.ToString(reader["Descripciones"]),
+                                Convert.ToDecimal(reader["Costo"]),
+                                Convert.ToDecimal(reader["PrecioVenta"]),
+                                Convert.ToInt32(reader["Stock"]),
+                                Convert.ToInt64(reader["IdUsuario"])
+                            ));
+                        }
+                    }
+                }
+            }
+            //foreach (Producto producto in productos)
+            //{
+            //    Console.WriteLine(producto);
+            //}
+            return productos;
+        }
+
+        public static List<Producto> TraerProductosVendidosPorUsuario(long idUsuario, string connectionString)
+        {
+            List<Producto> productos = new List<Producto>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                // Select para traer todos los productos
+                SqlCommand comandoProducto = new SqlCommand($"SELECT p.* FROM [SistemaGestion].[dbo].[ProductoVendido] AS pv INNER JOIN [SistemaGestion].[dbo].[Venta] AS v ON v.Id = pv.IdVenta INNER JOIN [SistemaGestion].[dbo].[Producto] AS p ON pv.IdProducto = p.Id WHERE v.IdUsuario = {idUsuario}", connection);
                 connection.Open();
                 using (SqlDataReader reader = comandoProducto.ExecuteReader())
                 {
