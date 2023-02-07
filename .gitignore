@@ -31,7 +31,7 @@
 *.out
 *.app
 
-/bin
-/bin/*
-/obj
-/obj/*
+Clase12/bin
+Clase12/bin/*
+Clase12/obj
+Clase12/obj/*
