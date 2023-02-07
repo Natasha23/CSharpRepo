@@ -31,7 +31,9 @@ namespace Clase12
             this.contraseña = contraseña;
             this.mail = mail;
         }
-
+        public Usuario()
+        {
+        }
         public override string ToString()
         {
             return $"{Id}.Nombre: {Nombre}, Apellido: {Apellido}, NombreDeUsuario:{NombreDeUsuario}, Mail: {Mail}";

@@ -9,17 +9,15 @@ namespace Clase12
         {
             string connectionString = "Data Source=DESKTOP-4R3SBSS\\SQLEXPRESS;Initial Catalog=SistemaGestion;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 
-            ListarProductos(connectionString);
+            //ListarProductos(connectionString);
+            //ListarUsuarios(connectionString);
+            //ListarVentas(connectionString);
+            //ListarProductosVendidos(connectionString);
 
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                ListarProductos(connectionString);
-                ListarUsuarios(connectionString);
-                ListarVentas(connectionString);
-                ListarProductosVendidos(connectionString);
-            }
+            TraerUsuario("eperez",connectionString);
+           
         }
+        
         public static List<Producto> ListarProductos(string connectionString)
         {
             List<Producto> productos = new List<Producto>();
@@ -52,6 +50,7 @@ namespace Clase12
             }
             return productos;
         }
+        
         public static List<Usuario> ListarUsuarios(string connectionString)
         {
             List<Usuario> usuarios = new List<Usuario>();
@@ -144,6 +143,35 @@ namespace Clase12
                 Console.WriteLine(prod);
             }
             return productosVendidos;
+        }
+
+        public static Usuario TraerUsuario(string nombreUsuario, string connectionString)
+        {
+            var usuario = new Usuario();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlCommand comandoUsuario = new SqlCommand($"SELECT * FROM Usuario WHERE NombreUsuario = '{nombreUsuario}'", connection);
+                connection.Open();
+                using (SqlDataReader reader = comandoUsuario.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            usuario = new Usuario(
+                                Convert.ToInt64(reader["Id"]),
+                                Convert.ToString(reader["Nombre"]),
+                                Convert.ToString(reader["Apellido"]),
+                                Convert.ToString(reader["NombreUsuario"]),
+                                Convert.ToString(reader["Contraseña"]),
+                                Convert.ToString(reader["Mail"])
+                            );
+                        }
+                    }
+                }
+            }
+            Console.WriteLine(usuario);
+            return usuario;
         }
     }
 }
