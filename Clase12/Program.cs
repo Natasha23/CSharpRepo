@@ -15,6 +15,7 @@ namespace Clase12
             //ListarProductosVendidos(connectionString);
 
             TraerUsuario("eperez",connectionString);
+            TraerProductosPorUsuario(1,connectionString);
            
         }
         
@@ -172,6 +173,39 @@ namespace Clase12
             }
             Console.WriteLine(usuario);
             return usuario;
+        }
+
+        public static List<Producto> TraerProductosPorUsuario(int idUsuario, string connectionString)
+        {
+            List<Producto> productos = new List<Producto>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                // Select para traer todos los productos
+                SqlCommand comandoProducto = new SqlCommand($"SELECT * FROM Producto WHERE IdUsuario = {idUsuario}", connection);
+                connection.Open();
+                using (SqlDataReader reader = comandoProducto.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            productos.Add(new Producto(
+                                Convert.ToInt64(reader["Id"]),
+                                Convert.ToString(reader["Descripciones"]),
+                                Convert.ToDecimal(reader["Costo"]),
+                                Convert.ToDecimal(reader["PrecioVenta"]),
+                                Convert.ToInt32(reader["Stock"]),
+                                Convert.ToInt64(reader["IdUsuario"])
+                            ));
+                        }
+                    }
+                }
+            }
+            foreach (Producto producto in productos)
+            {
+                Console.WriteLine(producto);
+            }
+            return productos;
         }
     }
 }
