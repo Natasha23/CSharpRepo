@@ -15,7 +15,7 @@ namespace PreEntrega
         {
             this.Id = id;
             this.Comentarios = comentarios;
-            this.IdUsuario = idUsuario;
+            this.IdUsuario = idDeUsuario;
         }
 
         public long Id { get => id; set => id = value; }

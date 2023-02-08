@@ -14,10 +14,12 @@ namespace Clase12
             //ListarVentas(connectionString);
             //ListarProductosVendidos(connectionString);
 
-            TraerUsuario("eperez",connectionString);
-            TraerProductosPorUsuario(1,connectionString);
-            TraerProductosVendidosPorUsuario(1,connectionString);
-
+            //TraerUsuario("eperez",connectionString);
+            //TraerProductosPorUsuario(1,connectionString);
+            //TraerProductosVendidosPorUsuario(1,connectionString);
+            //TraerVentasDelUsuario(1, connectionString);
+            InicioDeSesion("eperez", "SoyNuevoErnesto", connectionString);
+            InicioDeSesion("eperez", "SoyNuevoErnest", connectionString);
         }
         
         public static List<Producto> ListarProductos(string connectionString)
@@ -102,7 +104,7 @@ namespace Clase12
                         {
                             ventas.Add(new Venta(
                                 Convert.ToInt64(reader["Id"]),
-                                Convert.ToString(reader["Comentarios"]),
+                                reader["Comentarios"].ToString(),
                                 Convert.ToInt64(reader["IdUsuario"])
                             ));
                         }
@@ -215,7 +217,7 @@ namespace Clase12
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 // Select para traer todos los productos
-                SqlCommand comandoProducto = new SqlCommand($"SELECT p.* FROM [SistemaGestion].[dbo].[ProductoVendido] AS pv INNER JOIN [SistemaGestion].[dbo].[Venta] AS v ON v.Id = pv.IdVenta INNER JOIN [SistemaGestion].[dbo].[Producto] AS p ON pv.IdProducto = p.Id WHERE v.IdUsuario = {idUsuario}", connection);
+                SqlCommand comandoProducto = new SqlCommand($"SELECT p.* FROM ProductoVendido AS pv INNER JOIN Venta AS v ON v.Id = pv.IdVenta INNER JOIN Producto AS p ON pv.IdProducto = p.Id WHERE v.IdUsuario = {idUsuario}", connection);
                 connection.Open();
                 using (SqlDataReader reader = comandoProducto.ExecuteReader())
                 {
@@ -235,11 +237,70 @@ namespace Clase12
                     }
                 }
             }
-            foreach (Producto producto in productos)
-            {
-                Console.WriteLine(producto);
-            }
+            //foreach (Producto producto in productos)
+            //{
+            //    Console.WriteLine(producto);
+            //}
             return productos;
+        }
+
+        public static List<Venta> TraerVentasDelUsuario(long idUsuario, string connectionString)
+        {
+            List<Venta> ventas = new List<Venta>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                // Select para traer todos los productos
+                SqlCommand comandoVenta = new SqlCommand($"SELECT * FROM Venta WHERE IdUsuario = {idUsuario}", connection);
+                connection.Open();
+                using (SqlDataReader reader = comandoVenta.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            ventas.Add(new Venta(
+                                Convert.ToInt64(reader["Id"]),
+                                Convert.ToString(reader["Comentarios"]),
+                                Convert.ToInt64(reader["IdUsuario"])
+                            ));
+                        }
+                    }
+                }
+            }
+            foreach (Venta venta in ventas)
+            {
+                Console.WriteLine(venta);
+            }
+            return ventas;
+        }
+
+        public static Usuario InicioDeSesion(string nombreUsuario, string contraseña, string connectionString)
+        {
+            var usuario = new Usuario();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlCommand comandoUsuario = new SqlCommand($"SELECT * FROM Usuario WHERE NombreUsuario = '{nombreUsuario}' AND Contraseña = '{contraseña}'", connection);
+                connection.Open();
+                using (SqlDataReader reader = comandoUsuario.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            usuario = new Usuario(
+                                Convert.ToInt64(reader["Id"]),
+                                Convert.ToString(reader["Nombre"]),
+                                Convert.ToString(reader["Apellido"]),
+                                Convert.ToString(reader["NombreUsuario"]),
+                                Convert.ToString(reader["Contraseña"]),
+                                Convert.ToString(reader["Mail"])
+                            );
+                        }
+                    }
+                }
+            }
+            Console.WriteLine(usuario);
+            return usuario;
         }
     }
 }

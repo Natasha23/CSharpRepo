@@ -33,6 +33,12 @@ namespace Clase12
         }
         public Usuario()
         {
+            this.id = 0;
+            this.nombre = null;
+            this.apellido = null;
+            this.nombreDeUsuario = null;
+            this.contraseña = null;
+            this.mail = null;
         }
         public override string ToString()
         {
